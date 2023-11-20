@@ -1,0 +1,43 @@
+version: "3.8"
+
+networks:
+  controleFinanceiro_net:
+    driver: bridge
+
+volumes:
+  controleFinanceiro_DB:
+
+services:
+  app:
+    build: .
+    networks:
+      - controleFinanceiro_net
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+
+
+  # db:
+  #   image: mysql:8.0.30-debian
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: nest
+
+  controleFinanceiro_DB:
+    env_file:
+      - .env
+
+    image: ${IMAGE}
+    restart: always
+    networks:
+      - controleFinanceiro_net
+    ports:
+      - ${POSTGRES_PORT}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER_NAME}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - controleFinanceiro_DB:/controleFinanceiro
