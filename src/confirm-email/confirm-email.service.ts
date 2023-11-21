@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ConfirmEmailService {
   constructor(
-    
+
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   async update(user: User) {
     const { email } = user;
@@ -30,17 +30,17 @@ export class ConfirmEmailService {
             }
           }
         });
-        if (updateUser) {
-          throw new HttpException(
-            'Email Confirmado!',
-            HttpStatus.OK,
-          );
-        } else {
-          throw new HttpException(
-            'Email não confirmado! Erro ao gravar no banco de dados',
-            HttpStatus.FOUND,
-          );
-        }
+      if (updateUser) {
+        throw new HttpException(
+          'Email Confirmado!',
+          HttpStatus.OK,
+        );
+      } else {
+        throw new HttpException(
+          'Email não confirmado! Erro ao gravar no banco de dados',
+          HttpStatus.FOUND,
+        );
+      }
     }
   }
 }

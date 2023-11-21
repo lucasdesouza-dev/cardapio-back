@@ -7,7 +7,7 @@ import { UserService } from './../user/user.service';
 import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class ResetPasswordService {
@@ -16,7 +16,7 @@ export class ResetPasswordService {
     private mailerService: MailService,
     private jwtService: JwtService,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
   async create(createResetPasswordDto: CreateResetPasswordDto) {
     const user: User = await this.userService.findByEmail(
       createResetPasswordDto.email,
@@ -31,7 +31,7 @@ export class ResetPasswordService {
         tenantUuid: user.tenantUuid,
       };
 
-      
+
       const jwtToken = this.jwtService.sign(payload);
       this.mailerService.sendResetPassword(user, jwtToken);
       Logger.log(`Email de reset de senha enviado para ${user.email}`);
@@ -51,9 +51,9 @@ export class ResetPasswordService {
     return `This action returns a #${id} resetPassword`;
   }
 
- async update(user, updateResetPasswordDto: UpdateResetPasswordDto) {
+  async update(user, updateResetPasswordDto: UpdateResetPasswordDto) {
     const { email } = user;
-    const { password }= updateResetPasswordDto ;
+    const { password } = updateResetPasswordDto;
     if (user) {
       const updateUser = await this.prisma.user
         .update({
@@ -62,7 +62,7 @@ export class ResetPasswordService {
           },
           data: {
             password: await bcrypt.hash(password, 10),
-           
+
           },
         })
         .catch((e) => {

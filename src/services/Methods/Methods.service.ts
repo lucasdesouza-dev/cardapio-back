@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class MethodsService {
   constructor(private readonly prisma: PrismaService) { }
   async checkUser(userTenant, id, tabela) {
+    //@ts-ignore
     const item = await this.prisma[tabela].findUnique({
       where: { uuid: id },
     });
