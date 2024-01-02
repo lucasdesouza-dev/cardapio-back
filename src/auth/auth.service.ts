@@ -17,7 +17,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private mailerService: MailService,
-  ) {}
+  ) { }
 
   async gerarToken(payload: User) {
     const accessToken = this.jwtService.sign(payload);
@@ -35,7 +35,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       confirmEmail: user.confirmEmail,
-     
+
       tenantUuid: user.tenantUuid,
     };
 
@@ -46,10 +46,13 @@ export class AuthService {
       expiresIn: `${process.env.REFRESH_TOKEN_DURATION}`,
     });
 
-    
+    const confirmeJwtToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET_CONFIRME_EMAIL,
+      expiresIn: `${process.env.CONFIRME_EMAIL_TOKEN_DURATION}`,
+    });
 
     if (!user.confirmEmail) {
-      this.mailerService.sendUserConfirmation(user, jwtToken);
+      this.mailerService.sendUserConfirmation(user, confirmeJwtToken);
       throw new UnauthorizedException('Email não verificado!');
     }
     return {
@@ -114,7 +117,7 @@ export class AuthService {
     return this.gerarToken(payload);
   }
 
-   async loginSemSenha(body) {
+  async loginSemSenha(body) {
     const loginSemSenhaToken = body.loginsemsenha_token;
 
     const email = this.jwtService.decode(loginSemSenhaToken)['email'];

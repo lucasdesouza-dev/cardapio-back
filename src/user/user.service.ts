@@ -3,7 +3,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  
+
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -12,22 +12,27 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { MailService } from '../mail/mail.service';
+import { UserPayload } from 'src/auth/models/UserPayload';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
+
   constructor(
     private readonly prisma: PrismaService,
     private mailerService: MailService,
-  ) {}
+    private readonly jwtService: JwtService,
+
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
-    const token =  crypto.randomBytes(32).toString('hex');;
+    const token = crypto.randomBytes(32).toString('hex');;
     const data = {
       ...createUserDto,
       password: await bcrypt.hash(createUserDto.password, 10),
-      tenant:{
-        create:{}
+      tenant: {
+        create: {}
       }
-      
+
     };
     //@ts-ignore
     const createdUser = await this.prisma.user.create({ data }).catch((e) => {
@@ -40,10 +45,26 @@ export class UserService {
     });
 
 
+
+
+
     if (createdUser) {
-      
-      await this.mailerService.sendUserConfirmation(createdUser, token);
-    Logger.log(`Email de confirmaçao enviado para ${createdUser.email}`);
+      const payload: UserPayload = {
+        sub: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.name,
+        confirmEmail: createdUser.confirmEmail,
+
+        tenantUuid: createdUser.tenantUuid,
+      };
+
+      const confirmeJwtToken = this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET_CONFIRME_EMAIL,
+        expiresIn: `${process.env.CONFIRME_EMAIL_TOKEN_DURATION}`,
+      });
+
+      await this.mailerService.sendUserConfirmation(createdUser, confirmeJwtToken);
+      Logger.log(`Email de confirmaçao enviado para ${createdUser.email}`);
     }
 
     if (createdUser) {
