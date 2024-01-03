@@ -4,7 +4,7 @@ import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(private mailerService: MailerService) { }
 
   async sendUserConfirmation(user: User, token: string) {
     await this.mailerService.sendMail({
@@ -21,7 +21,7 @@ export class MailService {
   }
 
   async sendResetPassword(user: User, token: string) {
-    await this.mailerService.sendMail({
+    const res = await this.mailerService.sendMail({
       to: user.email,
       from: '"Time de Suporte" <suporte@controlefinanceiro.com>', // override default from
       subject: 'Bem vindo ao Controle Financeiro! Recuperação de senha!',
@@ -31,9 +31,16 @@ export class MailService {
         name: user.name,
         token,
       },
-    });
+    })
+
+    if (res.response.includes("OK")) {
+      return { status: 200, message: "Email Enviado Com Sucesso" }
+    } else {
+      return
+    }
+
   }
-    async sendLoginSemSenha(user: User, token: string) {
+  async sendLoginSemSenha(user: User, token: string) {
     await this.mailerService.sendMail({
       to: user.email,
       from: '"Time de Suporte" <suporte@controlefinanceiro.com>', // override default from
@@ -45,6 +52,6 @@ export class MailService {
         token,
       },
     });
-  
+
   }
 }

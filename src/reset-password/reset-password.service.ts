@@ -33,10 +33,13 @@ export class ResetPasswordService {
 
 
       const jwtToken = this.jwtService.sign(payload);
-      this.mailerService.sendResetPassword(user, jwtToken);
+      const response = await this.mailerService.sendResetPassword(user, jwtToken);
       Logger.log(`Email de reset de senha enviado para ${user.email}`);
-      throw new UnauthorizedException(
-        `Email de reset de senha enviado com sucesso!`,
+      if (response) {
+        throw new HttpException(response.message, response.status)
+      }
+      throw new HttpException(
+        `Erro ao enviar email!`, 400
       );
     } else {
       throw new UnauthorizedException('Usuario não encontrado');

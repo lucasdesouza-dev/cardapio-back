@@ -10,11 +10,11 @@ import { JwtModule } from '@nestjs/jwt';
     UserModule,
     MailModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
+      secret: process.env.JWT_SECRET_RESET_SENHA,
+      signOptions: { expiresIn: process.env.RESET_SENHA_TOKEN_DURATION },
     }),
   ],
   controllers: [ResetPasswordController],
   providers: [ResetPasswordService],
 })
-export class ResetPasswordModule {}
+export class ResetPasswordModule { }
