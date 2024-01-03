@@ -30,7 +30,7 @@ import { MethodsService } from './services/Methods/Methods.service';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: JwtAuthGuard
     }, MethodsService
   ],
 })

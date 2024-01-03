@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserFromJwt } from '../models/UserFromJwt';
+import { Strategy } from 'passport-jwt';
+import { AuthService } from '../auth.service';
+import { ExtractJwt } from 'passport-jwt';
 import { UserPayload } from '../models/UserPayload';
+import { UserFromJwt } from '../models/UserFromJwt';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class ConfirmeStrategy extends PassportStrategy(Strategy, 'confirme') {
+  static key = "confirme"
+
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_SECRET_CONFIRME_EMAIL,
     });
   }
 
