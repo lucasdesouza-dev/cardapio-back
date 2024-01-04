@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -17,10 +18,14 @@ import { ApiTags, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { LoginRequestBody } from './models/LoginRequestBody';
 import { UserRefreshToken } from './models/UserRefreshToken';
 import { UserLoginSemSenhaToken } from './models/UserLoginSemSenhaToken';
+import { AuthGuard } from '@nestjs/passport';
+import { LoginSemSenhaStrategy } from './strategies/loginsemsenha.strategy';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from '@prisma/client';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
   @ApiTags('auth')
   @ApiBody({
     type: LoginRequestBody,
@@ -48,17 +53,13 @@ export class AuthController {
     return this.authService.reautenticar(body); //este método será implementado abaixo, portanto é esperado que de erro.
   }
   @IsPublic()
-  @ApiBody({
-    type: UserLoginSemSenhaToken,
-    // description: 'Reason Code',
-    required: true,
-    isArray: false,
-  })
   @ApiTags('auth')
   @ApiBearerAuth('JWT-auth')
-  @Post('auth/loginsemsenhatoken')
-  async LoginSemSenha(@Body() body) {
-    return this.authService.loginSemSenha(body); //este método será implementado abaixo, portanto é esperado que de erro.
+  @UseGuards(AuthGuard(LoginSemSenhaStrategy.key))
+
+  @Get('auth/loginsemsenhatoken')
+  async LoginSemSenha(@CurrentUser() user: User) {
+    return this.authService.loginSemSenha(user); //este método será implementado abaixo, portanto é esperado que de erro.
   }
 }
 

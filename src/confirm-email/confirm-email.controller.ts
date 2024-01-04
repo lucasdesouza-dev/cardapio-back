@@ -4,7 +4,6 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
-import { ConfirmeGuard } from 'src/auth/guards/confirme-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfirmeStrategy } from 'src/auth/strategies/confirme.strategy';
 

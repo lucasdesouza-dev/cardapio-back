@@ -9,6 +9,7 @@ import { LoginValidationMiddleware } from './middlewares/login-validation.middle
 import { MailModule } from 'src/mail/mail.module';
 import { ConfirmeStrategy } from './strategies/confirme.strategy';
 import { ResetSenhaStrategy } from './strategies/reset-senha.strategy';
+import { LoginSemSenhaStrategy } from './strategies/loginsemsenha.strategy';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ResetSenhaStrategy } from './strategies/reset-senha.strategy';
     MailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, ResetSenhaStrategy, ConfirmeStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, LoginSemSenhaStrategy, ResetSenhaStrategy, ConfirmeStrategy],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

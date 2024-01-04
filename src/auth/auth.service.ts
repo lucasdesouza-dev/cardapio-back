@@ -117,19 +117,16 @@ export class AuthService {
     return this.gerarToken(payload);
   }
 
-  async loginSemSenha(body) {
-    const loginSemSenhaToken = body.loginsemsenha_token;
+  async loginSemSenha(user) {
 
-    const email = this.jwtService.decode(loginSemSenhaToken)['email'];
-    const usuario = await this.userService.findByEmail(email);
 
-    if (!loginSemSenhaToken) {
+    const usuario = await this.userService.findByEmail(user.email);
+
+    if (!user) {
       throw new NotFoundException('Token invalido');
     }
     try {
-      this.jwtService.verify(loginSemSenhaToken, {
-        secret: process.env.JWT_SECRET_LOGINSEMSENHA,
-      });
+
       return this.gerarToken(usuario);
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {
